@@ -14,7 +14,7 @@
  */
 package rebound.jagent.ui.cli;
 
-import rebound.hci.graphics2d.ImageUtilities;
+import rebound.util.ImageUtilities;
 
 import java.awt.image.BufferedImage;
 import java.io.File;

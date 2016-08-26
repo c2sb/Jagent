@@ -89,7 +89,7 @@ public class TagBlockMaker
 			//Int tags
 			{
 				//Number of int tags
-				Bytes.putLittleInt(buffer, g.getIntValCount() + (g.hasScripts() ? 1 : 0)); //Tag count; the +1 is for the "Script Count" int-tag
+				Bytes.putLittle(buffer, g.getIntValCount() + (g.hasScripts() ? 1 : 0)); //Tag count; the +1 is for the "Script Count" int-tag
 				
 				//Normal int tags
 				for (int i = 0; i < g.getIntValCount(); i++)
@@ -98,7 +98,7 @@ public class TagBlockMaker
 					writeLString(buffer, g.getIntTagName(i));
 					
 					//Int-tag value integer
-					Bytes.putLittleInt(buffer, g.getIntTagValue(i));
+					Bytes.putLittle(buffer, g.getIntTagValue(i));
 				}
 				
 				//Script Count
@@ -108,7 +108,7 @@ public class TagBlockMaker
 					writeLString(buffer, "Script Count");
 					
 					//Int-tag value integer
-					Bytes.putLittleInt(buffer, scriptCount);
+					Bytes.putLittle(buffer, scriptCount);
 				}
 			}
 			
@@ -118,7 +118,7 @@ public class TagBlockMaker
 			//Str tags
 			{
 				//Number of str tags
-				Bytes.putLittleInt(buffer, g.getStrValCount()+scriptCount); //Tag count
+				Bytes.putLittle(buffer, g.getStrValCount()+scriptCount); //Tag count
 				
 				
 				//Normal str tags
@@ -160,7 +160,7 @@ public class TagBlockMaker
 						//Write it all out
 						{
 							//Str-tag value pstring length integer
-							Bytes.putLittleInt(buffer, (int)predictedLength); //SAME HERE! xD
+							Bytes.putLittle(buffer, (int)predictedLength); //SAME HERE! xD
 							
 							long actualTotalLength = 0;
 							
@@ -201,7 +201,7 @@ public class TagBlockMaker
 							writeLString(buffer, "Script "+(i+1));
 							
 							//Str-tag value pstring
-							Bytes.putLittleInt(buffer, (int)length); //MUST CAST TO INT (32 BITS)!!  WILL TAKE DAYS TO DEBUG IF OVERLOADING IS FORGOTTEN!  xD
+							Bytes.putLittle(buffer, (int)length); //MUST CAST TO INT (32 BITS)!!  WILL TAKE DAYS TO DEBUG IF OVERLOADING IS FORGOTTEN!  xD
 							long actualLength = IOUtilities.dumpFileToOutputStream(scriptFile, buffer);
 							
 							if (length != actualLength)
@@ -235,13 +235,13 @@ public class TagBlockMaker
 		if (val.isStringTagVal())
 			writeLString(out, val.getStringValue());
 		else
-			Bytes.putLittleInt(out, val.getIntegerValue());
+			Bytes.putLittle(out, val.getIntegerValue());
 	}
 	
 	protected void writeLString(OutputStream out, String str) throws IOException
 	{
 		byte[] bstr = str.getBytes("ascii");
-		Bytes.putLittleInt(out, bstr.length);
+		Bytes.putLittle(out, bstr.length);
 		out.write(bstr);
 	}
 	

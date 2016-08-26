@@ -4,7 +4,7 @@
  */
 package rebound.jagent.lib.s16;
 
-import rebound.hci.graphics2d.ImageUtilities;
+import rebound.util.ImageUtilities;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.IOException;

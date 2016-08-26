@@ -68,7 +68,7 @@ public class PrayTemplate
 		return a.equals(b);
 	}
 	
-	private static boolean seteq(List a, List b)
+	private static boolean seteq(List<Group> a, List<Group> b)
 	{
 		if (a == b) return true;
 		if (a == null || b == null) return false;
@@ -77,8 +77,8 @@ public class PrayTemplate
 		if (b.size() != length)
 			return false;
 		
-		List a2 = new ArrayList(a);
-		List b2 = new ArrayList(b);
+		List<Group> a2 = new ArrayList<>(a);
+		List<Group> b2 = new ArrayList<>(b);
 		
 		for (int i = 0; i < length; i++)
 		{

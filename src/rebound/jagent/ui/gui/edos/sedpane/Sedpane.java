@@ -4,8 +4,8 @@
  */
 package rebound.jagent.ui.gui.edos.sedpane;
 
-import static rebound.hci.graphics2d.Direction2D.*;
-import static rebound.hci.graphics2d.java2d.Java2DUtilities.*;
+import static rebound.graphics2d.Direction2D.*;
+import static rebound.util.ImageUtilities.*;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -43,7 +43,7 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.Hashtable;
 import javax.swing.JComponent;
-import rebound.hci.graphics2d.Direction2D;
+import rebound.graphics2d.Direction2D;
 
 
 //Todo switch model from repaint-on-property-update to explicit-repaint

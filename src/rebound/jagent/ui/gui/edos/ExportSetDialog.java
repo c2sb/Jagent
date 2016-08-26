@@ -4,11 +4,11 @@
  */
 package rebound.jagent.ui.gui.edos;
 
-import rebound.hci.graphics2d.gui.components.ImageFormatDropDown;
-import rebound.hci.graphics2d.gui.components.JFileChooserWrapper;
-import rebound.hci.graphics2d.gui.components.LatentFileBox;
-import rebound.hci.graphics2d.gui.components.ImageFormatDropDown.Parity;
-import rebound.hci.graphics2d.gui.components.JFileChooserWrapper.JFileChooserDisplayType;
+import rebound.graphics2d.gui.components.ImageFormatDropDown;
+import rebound.graphics2d.gui.components.JFileChooserWrapper;
+import rebound.graphics2d.gui.components.LatentFileBox;
+import rebound.graphics2d.gui.components.ImageFormatDropDown.Parity;
+import rebound.graphics2d.gui.components.JFileChooserWrapper.JFileChooserDisplayType;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;

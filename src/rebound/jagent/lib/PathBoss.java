@@ -5,9 +5,9 @@
 package rebound.jagent.lib;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import rebound.util.collections.CollectionUtilities;
 
 public class PathBoss
 {
@@ -20,27 +20,32 @@ public class PathBoss
 	
 	
 	
-	protected Map<Character, String> charactersToEscapePosix = CollectionUtilities.newmap(
-			'/', "slash"
-			);
-	
-	protected Map<Character, String> charactersToEscapeMac = CollectionUtilities.newmap(
-			'/', "slash",
-			':', "colon"
-			);
-	
-	protected Map<Character, String> charactersToEscapeWindows = CollectionUtilities.newmap(
-			'\\', "backslash",
-			'/', "slash",
-			':', "colon",
-			'*', "asterisk",
-			'?', "question",
-			'"', "dblquote",
-			'<', "lessthan",
-			'>', "greaterthan",
-			'|', "pipe"
-			);
-	
+	protected static final Map<Character, String> charactersToEscapePosix;
+	static {
+		charactersToEscapePosix = new HashMap<>();
+		charactersToEscapePosix.put('/', "slash");
+	}
+
+	protected static final Map<Character, String> charactersToEscapeMac;
+	static {
+		charactersToEscapeMac = new HashMap<>();
+		charactersToEscapeMac.put('/', "slash");
+		charactersToEscapeMac.put(':', "colon");
+	}
+
+	protected static final Map<Character, String> charactersToEscapeWindows;
+	static {
+		charactersToEscapeWindows = new HashMap<>();
+		charactersToEscapeWindows.put('\\', "backslash");
+		charactersToEscapeWindows.put('/', "slash");
+		charactersToEscapeWindows.put(':', "colon");
+		charactersToEscapeWindows.put('*', "asterisk");
+		charactersToEscapeWindows.put('?', "question");
+		charactersToEscapeWindows.put('"', "dblquote");
+		charactersToEscapeWindows.put('<', "lessthan");
+		charactersToEscapeWindows.put('>', "greaterthan");
+		charactersToEscapeWindows.put('|', "pipe");
+	}
 	protected Map<Character, String> charactersToEscapeUnionCombinationOfAll = charactersToEscapeWindows;  //The Windows set just happens to be a superset of all the others XD
 	
 	

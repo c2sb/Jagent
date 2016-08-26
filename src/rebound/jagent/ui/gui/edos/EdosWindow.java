@@ -42,7 +42,7 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 import rebound.concurrency.threads.Scheduler;
-import rebound.hci.graphics2d.gui.components.ExtJFCFileFilter;
+import rebound.file.ExtJFCFileFilter;
 import rebound.jagent.lib.FormatMismatchException;
 import rebound.jagent.lib.blk.FromBLKConverter;
 import rebound.jagent.lib.blk.ToBLKConverter;

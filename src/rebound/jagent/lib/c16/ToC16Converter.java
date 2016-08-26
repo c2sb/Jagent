@@ -4,7 +4,7 @@
  */
 package rebound.jagent.lib.c16;
 
-import rebound.hci.graphics2d.ImageUtilities;
+import rebound.util.ImageUtilities;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import rebound.bits.Bytes;
 import rebound.jagent.lib.FormatMismatchException;
-import rebound.util.collections.ArrayUtilities;
+import rebound.util.ArrayUtilities;
 
 public class ToC16Converter
 {
@@ -69,11 +69,11 @@ public class ToC16Converter
 		int flags = 2;
 		if (bits565)
 			flags |= 1;
-		Bytes.putLittleInt(file, flags);
+		Bytes.putLittle(file, flags);
 		
 		
 		//Frame count
-		Bytes.putLittleShort(file, (short)frames.length);
+		Bytes.putLittle(file, (short)frames.length);
 		
 		
 		//Write frame headers
@@ -96,16 +96,16 @@ public class ToC16Converter
 		
 		
 		//Row 0 Offset
-		Bytes.putLittleInt(file, map.offsets[frameIndex][0]);
+		Bytes.putLittle(file, map.offsets[frameIndex][0]);
 		
 		//Dimensions
-		Bytes.putLittleShort(file, (short)width);
-		Bytes.putLittleShort(file, (short)height);
+		Bytes.putLittle(file, (short)width);
+		Bytes.putLittle(file, (short)height);
 		
 		//Other offsets
 		for (int row = 1; row < height; row++)
 		{
-			Bytes.putLittleInt(file, map.offsets[frameIndex][row]);
+			Bytes.putLittle(file, map.offsets[frameIndex][row]);
 		}
 	}
 	
@@ -147,7 +147,7 @@ public class ToC16Converter
 		}
 		
 		//Extra bits
-		Bytes.putLittleShort(file, (short)0);
+		Bytes.putLittle(file, (short)0);
 	}
 	
 	
@@ -240,7 +240,7 @@ public class ToC16Converter
 					short runHeader = (short)(length << 1);
 					if (!transparent)
 						runHeader |= 1;
-					Bytes.putLittleShort(file, runHeader);
+					Bytes.putLittle(file, runHeader);
 				}
 				
 				if (!transparent)
@@ -255,7 +255,7 @@ public class ToC16Converter
 		}
 		
 		//End-Of-Line tag (in practice, superfluous)
-		Bytes.putLittleShort(file, (short)0);
+		Bytes.putLittle(file, (short)0);
 	}
 	
 	

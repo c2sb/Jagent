@@ -18,7 +18,7 @@ import rebound.bits.Bytes;
 import rebound.bits.Unsigned;
 import rebound.io.IOUtilities;
 import rebound.jagent.lib.FormatMismatchException;
-import rebound.util.collections.ArrayUtilities;
+import rebound.util.ArrayUtilities;
 
 public class FromBLKConverter
 {
