@@ -15,7 +15,7 @@ import java.io.RandomAccessFile;
 import rebound.bits.Bytes;
 import rebound.exceptions.ImpossibleException;
 import rebound.jagent.lib.FormatMismatchException;
-import rebound.util.ArrayUtilities;
+import rebound.util.collections.ArrayUtilities;
 
 public class ToBLKConverter
 {
@@ -97,14 +97,14 @@ public class ToBLKConverter
 		int flags = 0;
 		if (bits565)
 			flags |= 1;
-		Bytes.putLittle(file, flags);
+		Bytes.putLittleInt(file, flags);
 		
 		
 		//Dimensions
-		Bytes.putLittle(file, (short)getWidthInBlocks());
-		Bytes.putLittle(file, (short)getHeightInBlocks());
+		Bytes.putLittleShort(file, (short)getWidthInBlocks());
+		Bytes.putLittleShort(file, (short)getHeightInBlocks());
 		short count = (short)getBlockCount();
-		Bytes.putLittle(file, count);
+		Bytes.putLittleShort(file, count);
 		
 		
 		//Write block headers
@@ -116,13 +116,13 @@ public class ToBLKConverter
 	{
 		//Offset
 		int offset0 = map.offsets[blockIndex]-4;
-		Bytes.putLittle(file, offset0);
+		Bytes.putLittleInt(file, offset0);
 		
 		//Dimensions
 		short width = (short)128;
 		short height = (short)128;
-		Bytes.putLittle(file, width);
-		Bytes.putLittle(file, height);
+		Bytes.putLittleShort(file, width);
+		Bytes.putLittleShort(file, height);
 	}
 	
 	

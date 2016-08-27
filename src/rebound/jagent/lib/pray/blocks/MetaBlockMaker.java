@@ -81,13 +81,13 @@ public class MetaBlockMaker
 		out.write(fullname);
 		
 		//PRAY Length
-		Bytes.putLittle(out, b.getLengthInFile());
+		Bytes.putLittleInt(out, b.getLengthInFile());
 		
 		//Uncompressed length
-		Bytes.putLittle(out, b.getOriginalLength());
+		Bytes.putLittleInt(out, b.getOriginalLength());
 		
 		int flags = b.isCompressed() ? 1 : 0;
-		Bytes.putLittle(out, flags);
+		Bytes.putLittleInt(out, flags);
 	}
 	
 	

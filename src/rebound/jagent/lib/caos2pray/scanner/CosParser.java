@@ -14,7 +14,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import rebound.exceptions.ImpossibleException;
-//import rebound.io.UniversalNewlineReader;
+import rebound.io.UniversalNewlineReader;
 
 /**
  * This parses CAOS files generally; it is not specific to C2P,
@@ -76,8 +76,8 @@ public class CosParser
 	{
 		if (in != null)
 			throw new IllegalStateException("Parser is already committed. (it's disposable)");
-		//UniversalNewlineReader unr = UniversalNewlineReader.wrap(r);
-		//in = unr;
+		UniversalNewlineReader unr = UniversalNewlineReader.wrap(r);
+		in = unr;
 		token = new Token();
 	}
 	

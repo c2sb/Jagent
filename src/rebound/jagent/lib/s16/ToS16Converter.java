@@ -5,7 +5,7 @@
 package rebound.jagent.lib.s16;
 
 
-import rebound.util.ImageUtilities;
+import rebound.hci.graphics2d.ImageUtilities;
 
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
@@ -65,11 +65,11 @@ public class ToS16Converter
 		int flags = 0;
 		if (bits565)
 			flags |= 1;
-		Bytes.putLittle(file, flags);
+		Bytes.putLittleInt(file, flags);
 		
 		
 		//Frame count
-		Bytes.putLittle(file, (short)frames.length);
+		Bytes.putLittleShort(file, (short)frames.length);
 		
 		
 		//Write frame headers
@@ -93,11 +93,11 @@ public class ToS16Converter
 		
 		//Offset
 		int offset0 = map.offsets[frameIndex];
-		Bytes.putLittle(file, offset0);
+		Bytes.putLittleInt(file, offset0);
 		
 		//Dimensions
-		Bytes.putLittle(file, (short)width);
-		Bytes.putLittle(file, (short)height);
+		Bytes.putLittleShort(file, (short)width);
+		Bytes.putLittleShort(file, (short)height);
 	}
 	
 	
