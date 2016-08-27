@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import rebound.exceptions.ImpossibleException;
@@ -141,7 +142,7 @@ public class TemplateConverter
 	
 	protected C2PCosFile parseFile(File file) throws NotIntegerTagException, C2PSyntaxException, ScriptReadException
 	{
-		C2PCosFile c2p = null;
+		C2PCosFile c2p;
 		
 		try
 		{
@@ -167,7 +168,6 @@ public class TemplateConverter
 	//<Conversion
 	/**
 	 * This constructs the template in its entirety.
-	 * @throws DependencyException 
 	 */
 	protected PrayTemplate construct(C2PCosFile c2PCosFile) throws ScriptReadException, C2PSyntaxException, DependencyException
 	{
@@ -187,85 +187,82 @@ public class TemplateConverter
 		//Build Tag Groups (DSAG, AGNT)
 		{
 			//Find the names
-			Map<String, String> blocktypes = null;
+			Map<String, String> blocktypes = new HashMap<>();
+
+			//DS
 			{
-				blocktypes = new HashMap<String, String>();
-				
-				//DS
+				int i = c2PCosFile.getSingletonCommandIndexOf("ds-name");
+				if (i != -1)
+					//DS Name
+					blocktypes.put("DSAG", c2PCosFile.getCommandSingletonArg(i));
+			}
+
+			//C3
+			{
+				int i = c2PCosFile.getSingletonCommandIndexOf("c3-name");
+				if (i != -1)
 				{
-					int i = c2PCosFile.getSingletonCommandIndexOf("ds-name");
-					if (i != -1)
-						//DS Name
-						blocktypes.put("DSAG", c2PCosFile.getCommandSingletonArg(i));
-				}
-				
-				//C3
-				{
-					int i = c2PCosFile.getSingletonCommandIndexOf("c3-name");
-					if (i != -1)
+					String c3name;
 					{
-						String c3name = null;
+						String[] args = c2PCosFile.getCommandArgs(i);
+
+						if (args.length == 1)
 						{
-							String[] args = c2PCosFile.getCommandArgs(i);
-							
-							if (args.length == 1)
-							{
-								c3name = args[0];
-							}
-							else if (args.length == 0)
-							{
-								if (!blocktypes.containsKey("DSAG"))
-									throw new C2PSyntaxException("The c3-name command may only lack an argument if there is a ds-name to default to.");
-								
-								c3name = blocktypes.get("DSAG") + " C3";
-							}
-							else
-							{
-								throw new C2PSyntaxException("The c3-name command takes no more than 1 argument.");
-							}
+							c3name = args[0];
 						}
-						
-						//C3 Name
-						blocktypes.put("AGNT", c3name);
-					}
-				}
-				
-				
-				//Generic
-				{
-					/*
-					 * Syntax:
-					 * 
-					 * DS-Name "The Box"
-					 * C3-Name "The Box C3"
-					 * 
-					 * DSGB-Name "The Box"
-					 */
-					
-					for (int i = 0; i < c2PCosFile.getCommandCount(); i++)
-					{
-						String cmd = c2PCosFile.getCommand(i);
-						if (cmd.toLowerCase().endsWith("-name"))
+						else if (args.length == 0)
 						{
-							String id = cmd.substring(0, cmd.length()-5);
-							if (id.length() == 4)
+							if (!blocktypes.containsKey("DSAG"))
+								throw new C2PSyntaxException("The c3-name command may only lack an argument if there is a ds-name to default to.");
+
+							c3name = blocktypes.get("DSAG") + " C3";
+						}
+						else
+						{
+							throw new C2PSyntaxException("The c3-name command takes no more than 1 argument.");
+						}
+					}
+
+					//C3 Name
+					blocktypes.put("AGNT", c3name);
+				}
+			}
+
+
+			//Generic
+			{
+				/*
+				 * Syntax:
+				 *
+				 * DS-Name "The Box"
+				 * C3-Name "The Box C3"
+				 *
+				 * DSGB-Name "The Box"
+				 */
+
+				for (int i = 0; i < c2PCosFile.getCommandCount(); i++)
+				{
+					String cmd = c2PCosFile.getCommand(i);
+					if (cmd.toLowerCase().endsWith("-name"))
+					{
+						String id = cmd.substring(0, cmd.length()-5);
+						if (id.length() == 4)
+						{
+							String name = c2PCosFile.getCommandSingletonArg(i);
+
+							//Add the pray group
 							{
-								String name = c2PCosFile.getCommandSingletonArg(i);
-								
-								//Add the pray group
-								{
-									//Todo? should the id be forced to uppercase?  Or pass through the case into the final file?  (case sensitivity isn't mentioned in the spec.); we'll just pass it through for now erring on preserving information
-									if (blocktypes.containsKey(id))
-										throw new C2PSyntaxException("Duplicate block types: "+id);
-									
-									blocktypes.put(id, name);
-								}
+								//Todo? should the id be forced to uppercase?  Or pass through the case into the final file?  (case sensitivity isn't mentioned in the spec.); we'll just pass it through for now erring on preserving information
+								if (blocktypes.containsKey(id))
+									throw new C2PSyntaxException("Duplicate block types: "+id);
+
+								blocktypes.put(id, name);
 							}
 						}
 					}
 				}
 			}
-			
+
 			
 			//Todo? warn: if there are no blocks defined (which is valid, if they just want a FILE container, but probably not intended)
 			
@@ -275,7 +272,7 @@ public class TemplateConverter
 				
 				//Check validity of name
 				{
-					byte[] asciiname = null;
+					byte[] asciiname;
 					
 					try
 					{
@@ -307,7 +304,7 @@ public class TemplateConverter
 				for (String s : args)
 					template.addInline("FILE", s, s);
 			}
-			
+
 			//Inlines
 			int[] inlines = c2PCosFile.findCommands("inline");
 			for (int index : inlines)
@@ -327,7 +324,7 @@ public class TemplateConverter
 				}
 			}
 		}
-		
+
 		return template;
 	}
 	
@@ -366,38 +363,33 @@ public class TemplateConverter
 				for (String arg : c2p.getCommandArgs(index))
 					g.addScript(arg);
 		}
-		
+
 		
 		//Dependencies
 		{
-			ArrayList<String> deps = new ArrayList<String>();
+			ArrayList<String> deps = new ArrayList<>();
 			
 			int[] indices = c2p.findCommands("attach");
-			String[] args = null;
 			for (int i : indices)
 			{
-				args = c2p.getCommandArgs(i);
-				for (String s : args)
-					deps.add(s);
+				String[] args = c2p.getCommandArgs(i);
+				Collections.addAll(deps, args);
 			}
 			
 			indices = c2p.findCommands("depend");
-			args = null;
 			for (int i : indices)
 			{
-				args = c2p.getCommandArgs(i);
-				for (String s : args)
-					deps.add(s);
+				String[] args = c2p.getCommandArgs(i);
+				Collections.addAll(deps, args);
 			}
 			
 			
 			
 			g.addIntTag("Dependency Count", deps.size());
-			int c = 0;
 			for (int i = 0; i < deps.size(); i++)
 			{
 				g.addStringTag("Dependency "+(i+1), deps.get(i));
-				c = getDependencyCategoryByExtension(deps.get(i));
+				int c = getDependencyCategoryByExtension(deps.get(i));
 				g.addIntTag("Dependency Category "+(i+1), c);
 			}
 		}

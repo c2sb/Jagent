@@ -78,7 +78,7 @@ public class TagBlockMaker
 		
 		
 		//Write data
-		byte[] blockContents = null;
+		byte[] blockContents;
 		{
 			ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 			
@@ -213,7 +213,6 @@ public class TagBlockMaker
 			
 			
 			blockContents = buffer.toByteArray();
-			buffer = null;
 		}
 		
 		

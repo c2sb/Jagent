@@ -23,12 +23,12 @@ public class C2PCosFile
 	public C2PCosFile()
 	{
 		super();
-		commands = new ArrayList<String>();
-		commandArgs = new ArrayList<String[]>();
-		stagNames = new ArrayList<String>();
-		itagNames = new ArrayList<String>();
-		stagVals = new ArrayList<String>();
-		itagVals = new ArrayList<Integer>();
+		commands = new ArrayList<>();
+		commandArgs = new ArrayList<>();
+		stagNames = new ArrayList<>();
+		itagNames = new ArrayList<>();
+		stagVals = new ArrayList<>();
+		itagVals = new ArrayList<>();
 	}
 	
 	

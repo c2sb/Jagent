@@ -14,25 +14,25 @@ import rebound.jagent.lib.pray.template.TemplateParser;
 public class NicePrayMaker
 extends PrayMaker
 {
+	private PrayTemplate getPrayTemplate(File praySource) throws IOException, InvalidNameException {
+		FileInputStream in = new FileInputStream(praySource);
+
+		TemplateParser parser = new TemplateParser();
+		parser.setIn(in);
+
+		parser.parse();
+		parser.setContext(praySource);
+
+		in.close();
+
+		return parser.getTemplate();
+	}
+
 	public void niceWrite(File praySource, String destination) throws IOException, InvalidNameException
 	{
-		PrayTemplate template = null;
-		{
-			FileInputStream in = new FileInputStream(praySource);
-			
-			TemplateParser parser = new TemplateParser();
-			parser.setIn(in);
-			
-			parser.parse();
-			parser.setContext(praySource);
-			
-			in.close();
-			
-			template = parser.getTemplate();
-		}
-		
-		PrayTemplate t = template;
-		setPrayTemplate(t);
+		PrayTemplate template = getPrayTemplate(praySource);
+
+		setPrayTemplate(template);
 		
 		FileOutputStream out = new FileOutputStream(destination);
 		setOut(out);

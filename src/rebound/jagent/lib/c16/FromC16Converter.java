@@ -31,18 +31,12 @@ public class FromC16Converter
 	
 	public void read() throws IOException, FormatMismatchException
 	{
-		RandomAccessFile file = new RandomAccessFile(c16File, "r");
-		try
-		{
+		try (RandomAccessFile file = new RandomAccessFile(c16File, "r")) {
 			DataMap map = new DataMap();
 			if (notifee != null) notifee.startC16Reading();
 			readHeaders(file, map);
 			readImageDatii(file, map);
 			if (notifee != null) notifee.finC16Reading();
-		}
-		finally
-		{
-			file.close();
 		}
 	}
 	

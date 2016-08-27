@@ -40,7 +40,7 @@ public class PrayParser
 	
 	protected static final byte[] PRAYMAGIC = new byte[]{0x50,0x52,0x41,0x59};
 	
-	public void parse() throws IOException, EOFException, FileNotFoundException, FormatMismatchException
+	public void parse() throws IOException, FormatMismatchException
 	{
 		//Read and check magic
 		{
@@ -60,7 +60,7 @@ public class PrayParser
 		
 		template = new PrayTemplate(template.getDir());
 		
-		Block currBlock = null;
+		Block currBlock;
 		int bindex = 0;
 		while (true)
 		{
@@ -70,8 +70,8 @@ public class PrayParser
 				//Clean EOF
 				break;
 			
-			ProtectiveInputStream vishnishtee = null ;
-			InputStream blockDataStream = null;
+			ProtectiveInputStream vishnishtee;
+			InputStream blockDataStream;
 			{
 				//This will prevent the block parser from reading past the end of the block, and tell me how much it read, in case it reads less than it's supposed to.
 				vishnishtee = new ProtectiveInputStream(in, currBlock.getLengthInFile());
@@ -152,8 +152,7 @@ public class PrayParser
 	
 	protected static InputStream getInflaterInputStream(InputStream in)
 	{
-		InflaterInputStream iis = new InflaterInputStream(in);
-		return iis;
+		return new InflaterInputStream(in);
 	}
 	
 	
@@ -213,12 +212,9 @@ public class PrayParser
 		{
 			return tally;
 		}
-	};	
-	
-	
-	
-	
-	
+	}
+
+
 	public InputStream getIn()
 	{
 		return this.in;

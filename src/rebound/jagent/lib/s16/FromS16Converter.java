@@ -33,18 +33,12 @@ public class FromS16Converter
 	
 	public void read() throws IOException, FormatMismatchException
 	{
-		RandomAccessFile file = new RandomAccessFile(s16File, "r");
-		try
-		{
+		try (RandomAccessFile file = new RandomAccessFile(s16File, "r")) {
 			DataMap map = new DataMap();
 			if (notifee != null) notifee.startS16Reading();
 			readHeaders(file, map);
 			readImageDatii(file, map);
 			if (notifee != null) notifee.finS16Reading();
-		}
-		finally
-		{
-			file.close();
 		}
 	}
 	
@@ -87,6 +81,25 @@ public class FromS16Converter
 			if (notifee != null) notifee.finS16ReadingFrame(i, frames.length);
 		}
 	}
+
+	private byte[] readImageBytes(RandomAccessFile file, DataMap map, int index) throws IOException, FormatMismatchException {
+		int width = map.widths[index];
+		int height = map.heights[index];
+
+		int offset = map.offsets[index];
+		int imageDataLength = 2 * width * height; //2 bytes per pixel
+
+		//Valiate no EOF
+		if (imageDataLength + offset > file.length())
+			throw new FormatMismatchException("S16 File appears to be truncated at image "+index);
+
+		file.seek(offset);
+
+		byte[] imagedata = new byte[imageDataLength];
+		IOUtilities.forceRead(file, imagedata);
+
+		return imagedata;
+	}
 	
 	protected void readImageData(RandomAccessFile file, DataMap map, int index) throws IOException, FormatMismatchException
 	{
@@ -94,42 +107,18 @@ public class FromS16Converter
 		int width = map.widths[index];
 		int height = map.heights[index];
 		
-		
 		//Read it all
-		byte[] imagedata = null;
-		{
-			int offset = map.offsets[index];
-			int imageDataLength = 2 * width * height; //2 bytes per pixel
-			
-			//Valiate no EOF
-			{
-				if (imageDataLength + offset > file.length())
-					throw new FormatMismatchException("S16 File appears to be truncated at image "+index);
-			}
-			
-			
-			file.seek(offset);
-			
-			imagedata = new byte[imageDataLength];
-			
-			IOUtilities.forceRead(file, imagedata);
-		}
-		
-		
+		byte[] imagedata = readImageBytes(file, map, index);
+
 		//Wrap it in an ... Image, since the JRE natively supports 555 and 565
+		frames[index] = ImageUtilities.wrapRawImageData_5X5_bytes(width, height, imagedata, 0, imagedata.length, is565, Endianness.LITTLE);
+
+		if (getAlphaColor() != null)
 		{
-			frames[index] = ImageUtilities.wrapRawImageData_5X5_bytes(width, height, imagedata, 0, imagedata.length, is565, Endianness.LITTLE);
-			
-			if (getAlphaColor() != null)
-			{
-				frames[index] = ImageUtilities.colorToAlpha(frames[index], getAlphaColor().getRGB()); //it might reallocate the image
-			}
+			frames[index] = ImageUtilities.colorToAlpha(frames[index], getAlphaColor().getRGB()); //it might reallocate the image
 		}
 	}
-	
-	
-	
-	
+
 	
 	
 	

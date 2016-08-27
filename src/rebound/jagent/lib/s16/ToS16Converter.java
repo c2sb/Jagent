@@ -106,12 +106,9 @@ public class ToS16Converter
 	{
 		map.headersLength = 4; //flags
 		map.headersLength += 2; //frame count
-		for (int i = 0; i < frames.length; i++)
-		{
-			map.headersLength += 4; //Line0 offset
-			map.headersLength += 2; //Width
-			map.headersLength += 2; //Height
-		}
+		map.headersLength += 4 * frames.length; //Line0 offset
+		map.headersLength += 2 * frames.length; //Width
+		map.headersLength += 2 * frames.length; //Height
 	}
 	
 	
@@ -144,7 +141,7 @@ public class ToS16Converter
 	protected void normalizeImages()
 	{
 		ColorConvertOp converter = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_sRGB), null);
-		BufferedImage dest = null, src = null;
+		BufferedImage dest, src = null;
 		if (notifee != null) notifee.startS16PreConverting();
 		for (int i = 0; i < frames.length; i++)
 		{

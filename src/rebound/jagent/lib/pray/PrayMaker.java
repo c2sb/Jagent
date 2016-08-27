@@ -45,9 +45,8 @@ public class PrayMaker
 		}
 		
 		String[] FILEsrcs = baker.getInlineFilesSources();
-		for (int i = 0; i < FILEsrcs.length; i++)
-		{
-			baker.writeInlineFile(out, FILEsrcs[i]);
+		for (String FILEsrc : FILEsrcs) {
+			baker.writeInlineFile(out, FILEsrc);
 			if (notifee != null) notifee.finWritingBlock(index);
 			index++;
 		}
