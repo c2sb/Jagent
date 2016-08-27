@@ -28,7 +28,7 @@ import rebound.jagent.lib.blk.FromBLKConverter;
 import rebound.jagent.lib.c16.FromC16Converter;
 import rebound.jagent.lib.s16.FromS16Converter;
 import rebound.text.StringUtilities;
-import rebound.util.cli.StandardArguments;
+//import rebound.util.cli.StandardArguments;
 
 public class EdosTool
 {
@@ -37,12 +37,12 @@ public class EdosTool
 	
 	public static void main(String[] args) throws IOException, FormatMismatchException
 	{
-		StandardArguments sargs = new StandardArguments();
-		sargs.bake(args);
+		//StandardArguments sargs = new StandardArguments();
+		//sargs.bake(args);
 		
 		EdosTool tool = new EdosTool();
 		
-		if (!sargs.getLongSuffices("type=").isEmpty())
+		/*if (!sargs.getLongSuffices("type=").isEmpty())
 		{
 			tool.formatName = sargs.getLongSuffices("type=").get(0);
 		}
@@ -58,7 +58,7 @@ public class EdosTool
 		for (String t : sargs.getTargets())
 		{
 			tool.processExtract(new File(t));
-		}
+		}*/
 	}
 	
 	
