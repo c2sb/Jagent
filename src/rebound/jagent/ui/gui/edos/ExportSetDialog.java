@@ -11,8 +11,6 @@ import rebound.hci.graphics2d.gui.components.ImageFormatDropDown.Parity;
 import rebound.hci.graphics2d.gui.components.JFileChooserWrapper.JFileChooserDisplayType;
 
 import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.imageio.spi.ImageWriterSpi;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -170,13 +168,7 @@ extends JFrame
 		{
 			submitButton = new JButton();
 			submitButton.setText("Save Set");
-			submitButton.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent e)
-				{
-					submitClicked();
-				}
-			});
+			submitButton.addActionListener(e -> submitClicked());
 		}
 		return this.submitButton;
 	}
@@ -189,13 +181,7 @@ extends JFrame
 		{
 			cancelButton = new JButton();
 			cancelButton.setText("Cancel");
-			cancelButton.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent e)
-				{
-					cancelClicked();
-				}
-			});
+			cancelButton.addActionListener(e -> cancelClicked());
 		}
 		return this.cancelButton;
 	}

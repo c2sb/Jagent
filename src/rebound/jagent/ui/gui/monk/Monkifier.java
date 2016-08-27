@@ -41,8 +41,7 @@ public class Monkifier
 	private TemplateParser temparser = new TemplateParser();
 	private PrayMaker maker = new PrayMaker();
 	private TemplateConstructor constructor = new TemplateConstructor();
-	private PrayTemplate template;
-	
+
 	public Monkifier(Notifee n)
 	{
 		super();
@@ -123,7 +122,8 @@ public class Monkifier
 		int extdot = sourceFile.getName().lastIndexOf(".");
 		if (extdot != -1)
 			basename = sourceFile.getName().substring(0, extdot);
-		
+
+		PrayTemplate template;
 		if (lowercaseSourceFileName.endsWith(".cos"))
 		{
 			//CAOS2PRAY
@@ -233,7 +233,7 @@ public class Monkifier
 				}
 				
 				constructor.setOut(cout);
-				
+
 				try
 				{
 					constructor.construct();

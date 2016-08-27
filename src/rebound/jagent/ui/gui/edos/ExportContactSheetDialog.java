@@ -12,8 +12,6 @@ import rebound.hci.graphics2d.gui.components.JFileChooserWrapper.JFileChooserDis
 
 import static rebound.text.StringUtilities.*;
 import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import javax.imageio.spi.ImageWriterSpi;
 import javax.swing.JButton;
@@ -176,13 +174,7 @@ extends JFrame
 		{
 			submitButton = new JButton();
 			submitButton.setText("Save Set");
-			submitButton.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent e)
-				{
-					submitButtonClicked();
-				}
-			});
+			submitButton.addActionListener(e -> submitButtonClicked());
 		}
 		return this.submitButton;
 	}
@@ -195,13 +187,7 @@ extends JFrame
 		{
 			cancelButton = new JButton();
 			cancelButton.setText("Cancel");
-			cancelButton.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent e)
-				{
-					cancelClicked();
-				}
-			});
+			cancelButton.addActionListener(e -> cancelClicked());
 		}
 		return this.cancelButton;
 	}

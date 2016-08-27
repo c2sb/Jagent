@@ -18,6 +18,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.swing.JOptionPane;
 import rebound.jagent.ui.gui.AboutDialog;
@@ -59,13 +60,12 @@ implements WindowListener
 	
 	
 	
-	protected List<EdosWindow> windowRegistry;
-	protected AboutDialog aboutDialog;
+	protected final List<EdosWindow> windowRegistry = new ArrayList<>();
+	protected final AboutDialog aboutDialog = new AboutDialog(ABOUT_RESOURCE);
 	
 	public EdosApplicationCoordinator()
 	{
 		super();
-		windowRegistry = new ArrayList<EdosWindow>();
 	}
 	
 	
@@ -79,38 +79,43 @@ implements WindowListener
 		(
 			new ApplicationListenerClone()
 			{
+				@Override
 				public void handleAbout(ApplicationEventProxy e)
 				{
 					e.setHandled(true);
 					aboutClicked();
 				}
-				
+
+				@Override
 				public void handleOpenFile(ApplicationEventProxy e)
 				{
 					System.out.println("Open Document("+e.getFilename()+")");
 					e.setHandled(true);
 					load(e.getFilename());
 				}
-				
+
+				@Override
 				public void handleQuit(ApplicationEventProxy e)
 				{
 					safeQuit();
 					e.setHandled(false); //Because Application._setTermination takes true (handled) to mean 'Quit the application' and false (unhandled) to mean leave it be.
 				}
-				
+
+				@Override
 				public void handleReOpenApplication(ApplicationEventProxy e)
 				{
 					//Nothing special
 				}
-				
+
+				@Override
 				public void handleOpenApplication(ApplicationEventProxy e)
 				{
 					//Not quite sure what this does that main(String[]) doesn't...
 				}
-				
-				
+
+				@Override
 				public void handlePreferences(ApplicationEventProxy e) {}
-				
+				@Override
 				public void handlePrintFile(ApplicationEventProxy e) {}
 			}
 		);
@@ -130,18 +135,8 @@ implements WindowListener
 	{
 		EdosWindow looseImageTarget = null;
 		
-		boolean atleastOneNonSprite = false;
-		{
-			for (File file : files)
-			{
-				if (!isSpriteFile(file))
-				{
-					atleastOneNonSprite = true;
-					break;
-				}
-			}
-		}
-		
+		boolean atleastOneNonSprite = Arrays.stream(files).anyMatch(file -> !isSpriteFile(file));
+
 		if (atleastOneNonSprite)
 			looseImageTarget = newWindow(); //Make sure it's first so that subsequent image loads will load into this window
 		
@@ -154,7 +149,8 @@ implements WindowListener
 			}
 			else
 			{
-				looseImageTarget.importImageSafe(file);
+				if (atleastOneNonSprite)
+					looseImageTarget.importImageSafe(file);
 			}
 		}
 	}
@@ -176,18 +172,16 @@ implements WindowListener
 		{
 			synchronized (windowRegistry)
 			{
-				EdosWindow target = null;
+				EdosWindow target;
+				if (windowRegistry.isEmpty())
 				{
-					if (windowRegistry.isEmpty())
-					{
-						target = newWindow(); //I can't imagine this path would be used, but just to be safe...
-					}
-					else
-					{
-						target = windowRegistry.get(0);
-					}
+					target = newWindow(); //I can't imagine this path would be used, but just to be safe...
 				}
-				
+				else
+				{
+					target = windowRegistry.get(0);
+				}
+
 				target.importImageSafe(file);
 			}
 		}
@@ -198,7 +192,7 @@ implements WindowListener
 	
 	/**
 	 * Makes sure the user is on board.<br>
-	 * @returns <code>true</code> if System.exit() was called (although this shouldn't technically return), or <code>false</code> if it was cancelled.
+	 * @return <code>true</code> if System.exit() was called (although this shouldn't technically return), or <code>false</code> if it was cancelled.
 	 */
 	public boolean safeQuit()
 	{
@@ -214,22 +208,10 @@ implements WindowListener
 	}
 	
 	
-	
-	
-	
-	public AboutDialog getAboutDialog()
-	{
-		if (aboutDialog == null)
-		{
-			aboutDialog = new AboutDialog(ABOUT_RESOURCE);
-		}
-		return this.aboutDialog;
-	}
-	
-	
+
 	public void aboutClicked()
 	{
-		getAboutDialog().display();
+		aboutDialog.display();
 	}
 	
 	
@@ -268,8 +250,8 @@ implements WindowListener
 			windowRegistry.add(window);
 		}
 	}
-	
-	
+
+	@Override
 	public void windowClosing(WindowEvent e)
 	{
 		if (e.getWindow() instanceof EdosWindow)
@@ -282,22 +264,27 @@ implements WindowListener
 	
 	
 	
-	
+	@Override
 	public void windowOpened(WindowEvent e)
 	{
 	}
+	@Override
 	public void windowClosed(WindowEvent e)
 	{
 	}
+	@Override
 	public void windowIconified(WindowEvent e)
 	{
 	}
+	@Override
 	public void windowDeiconified(WindowEvent e)
 	{
 	}
+	@Override
 	public void windowActivated(WindowEvent e)
 	{
 	}
+	@Override
 	public void windowDeactivated(WindowEvent e)
 	{
 	}

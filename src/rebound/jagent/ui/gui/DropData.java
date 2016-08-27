@@ -92,7 +92,7 @@ public class DropData
 		
 		String[] uris = StringUtilities.split(data, '\n');
 		
-		List<File> files = new ArrayList<File>();
+		List<File> files = new ArrayList<>();
 		{
 			for (String rawuri : uris)
 			{

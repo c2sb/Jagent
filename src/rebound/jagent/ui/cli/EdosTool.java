@@ -20,6 +20,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import javax.imageio.ImageIO;
 import rebound.bits.Endianness;
 import rebound.file.FSUtilities;
@@ -208,14 +209,8 @@ public class EdosTool
 	
 	protected void writeFile(File file, byte[] data) throws IOException
 	{
-		FileOutputStream out = new FileOutputStream(file);
-		try
-		{
+		try (FileOutputStream out = new FileOutputStream(file)) {
 			out.write(data);
-		}
-		finally
-		{
-			out.close();
 		}
 	}
 }

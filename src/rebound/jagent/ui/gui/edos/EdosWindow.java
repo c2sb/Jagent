@@ -6,14 +6,7 @@ package rebound.jagent.ui.gui.edos;
 
 import static rebound.text.StringUtilities.*;
 import java.awt.Color;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
 import java.awt.image.WritableRaster;
@@ -21,7 +14,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import javax.imageio.ImageIO;
@@ -38,7 +30,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 import rebound.concurrency.threads.Scheduler;
@@ -50,6 +41,7 @@ import rebound.jagent.lib.c16.FromC16Converter;
 import rebound.jagent.lib.c16.ToC16Converter;
 import rebound.jagent.lib.s16.FromS16Converter;
 import rebound.jagent.lib.s16.ToS16Converter;
+import rebound.jagent.ui.gui.common.GUI;
 import rebound.jagent.ui.gui.edos.sedpane.MemoryImageStorage;
 import rebound.jagent.ui.gui.edos.sedpane.Sedpane;
 import rebound.jagent.ui.gui.edos.sedpane.SedpaneImageMutationListener;
@@ -87,10 +79,24 @@ extends JFrame
 	//Menu
 	protected JMenuBar mnu;
 	protected JMenu mnuFile, mnuEdit, mnuHelp;
-	protected JMenuItem mnuFileNew, mnuFileSave, mnuFileOpen, mnuFileClose, mnuFileQuit, mnuFileImport, mnuFileImportSet, mnuFileImportContactSheet, mnuFileExport, mnuFileExportSet, mnuFileExportContactSheet;
-	protected JMenuItem mnuEditClearAll;
+
+
+	protected final JMenuItem mnuFileNew = GUI.createMenuItem("New", KeyEvent.VK_N, this::newClicked);
+	protected final JMenuItem mnuFileOpen = GUI.createMenuItem("Open", KeyEvent.VK_O, this::openClicked);
+	protected final JMenuItem mnuFileSave = GUI.createMenuItem("Save", KeyEvent.VK_S, this::saveClicked);
+	protected final JMenuItem mnuFileImport = GUI.createMenuItem("Import Images", KeyEvent.VK_I, this::importImageClicked);
+	protected final JMenuItem mnuFileImportSet = GUI.createMenuItem("Import Set", KeyEvent.VK_I, KeyEvent.SHIFT_DOWN_MASK, this::importSetClicked);
+	protected final JMenuItem mnuFileImportContactSheet = GUI.createMenuItem("Import Contact Sheet", KeyEvent.VK_I, KeyEvent.ALT_DOWN_MASK, this::importContactSheetClicked);
+	protected final JMenuItem mnuFileExport = GUI.createMenuItem("Import Selected Image", KeyEvent.VK_E, this::exportImageClicked);
+	protected final JMenuItem mnuFileExportSet = GUI.createMenuItem("Export Set", KeyEvent.VK_E, KeyEvent.SHIFT_DOWN_MASK, this::exportSetClicked);
+	protected final JMenuItem mnuFileExportContactSheet = GUI.createMenuItem("Export Contact Sheet", KeyEvent.VK_E, KeyEvent.ALT_DOWN_MASK, this::exportContactSheetClicked);
+	protected final JMenuItem mnuFileClose = GUI.createMenuItem("Close window", KeyEvent.VK_W, this::closeClicked);
+	protected final JMenuItem mnuFileQuit = GUI.createMenuItem("Quit", KeyEvent.VK_Q, this::quitClicked);
+
+
+	protected final JMenuItem mnuEditClearAll = GUI.createMenuItem("Clear All", this::clearAllClicked);
 	protected JCheckBoxMenuItem mnuEdit565, mnuEditTransparencyEmulation;
-	protected JMenuItem mnuHelpAbout;
+	protected final JMenuItem mnuHelpAbout = GUI.createMenuItem("About", KeyEvent.VK_F1, this::aboutClicked);
 	
 	//Misc gui
 	protected Color statusInfoColor = Color.blue;
@@ -219,218 +225,29 @@ extends JFrame
 		if (mnuFile == null)
 		{
 			mnuFile = new JMenu("File");
-			mnuFile.add(getMnuFileNew());
-			mnuFile.add(getMnuFileOpen());
-			mnuFile.add(getMnuFileSave());
-			mnuFile.add(getMnuFileImport());
-			mnuFile.add(getMnuFileExport());
-			mnuFile.add(getMnuFileImportSet());
-			mnuFile.add(getMnuFileExportSet());
-			mnuFile.add(getMnuFileImportContactSheet());
-			mnuFile.add(getMnuFileExportContactSheet());
-			mnuFile.add(getMnuFileClose());
+			mnuFile.add(mnuFileNew);
+			mnuFile.add(mnuFileOpen);
+			mnuFile.add(mnuFileSave);
+			mnuFile.add(mnuFileImport);
+			mnuFile.add(mnuFileExport);
+			mnuFile.add(mnuFileImportSet);
+			mnuFile.add(mnuFileExportSet);
+			mnuFile.add(mnuFileImportContactSheet);
+			mnuFile.add(mnuFileExportContactSheet);
+			mnuFile.add(mnuFileClose);
 			
 			if (UseQuitMenuItem)
-				mnuFile.add(getMnuFileQuit());
+				mnuFile.add(mnuFileQuit);
 		}
 		return mnuFile;
 	}
-	
-	public JMenuItem getMnuFileNew()
-	{
-		if (mnuFileNew == null)
-		{
-			mnuFileNew = new JMenuItem("New");
-			mnuFileNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-			mnuFileNew.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent e)
-				{
-					newClicked();
-				}
-			});
-		}
-		return mnuFileNew;
-	}
-	
-	public JMenuItem getMnuFileOpen()
-	{
-		if (mnuFileOpen == null)
-		{
-			mnuFileOpen = new JMenuItem("Open");
-			mnuFileOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-			mnuFileOpen.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent e)
-				{
-					openClicked();
-				}
-			});
-		}
-		return mnuFileOpen;
-	}
-	
-	public JMenuItem getMnuFileSave()
-	{
-		if (mnuFileSave == null)
-		{
-			mnuFileSave = new JMenuItem("Save");
-			mnuFileSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-			mnuFileSave.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent e)
-				{
-					saveClicked();
-				}
-			});
-		}
-		return mnuFileSave;
-	}
-	
-	public JMenuItem getMnuFileImport()
-	{
-		if (mnuFileImport == null)
-		{
-			mnuFileImport = new JMenuItem("Import Images");
-			mnuFileImport.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-			mnuFileImport.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent e)
-				{
-					importImageClicked();
-				}
-			});
-		}
-		return mnuFileImport;
-	}
-	
-	public JMenuItem getMnuFileImportSet()
-	{
-		if (mnuFileImportSet == null)
-		{
-			mnuFileImportSet = new JMenuItem("Import Set");
-			mnuFileImportSet.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, KeyEvent.SHIFT_DOWN_MASK | Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-			mnuFileImportSet.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent e)
-				{
-					importSetClicked();
-				}
-			});
-		}
-		return mnuFileImportSet;
-	}
-	
-	public JMenuItem getMnuFileImportContactSheet()
-	{
-		if (mnuFileImportContactSheet == null)
-		{
-			mnuFileImportContactSheet = new JMenuItem("Import Contact Sheet");
-			mnuFileImportContactSheet.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, KeyEvent.ALT_DOWN_MASK | Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-			mnuFileImportContactSheet.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent e)
-				{
-					importContactSheetClicked();
-				}
-			});
-		}
-		return mnuFileImportContactSheet;
-	}
-	
-	public JMenuItem getMnuFileExport()
-	{
-		if (mnuFileExport == null)
-		{
-			mnuFileExport = new JMenuItem("Export Selected Image");
-			mnuFileExport.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-			mnuFileExport.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent e)
-				{
-					exportImageClicked();
-				}
-			});
-		}
-		return mnuFileExport;
-	}
-	
-	public JMenuItem getMnuFileExportSet()
-	{
-		if (mnuFileExportSet == null)
-		{
-			mnuFileExportSet = new JMenuItem("Export Set");
-			mnuFileExportSet.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, KeyEvent.SHIFT_DOWN_MASK | Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-			mnuFileExportSet.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent e)
-				{
-					exportSetClicked();
-				}
-			});
-		}
-		return mnuFileExportSet;
-	}
-	
-	public JMenuItem getMnuFileExportContactSheet()
-	{
-		if (mnuFileExportContactSheet == null)
-		{
-			mnuFileExportContactSheet = new JMenuItem("Export Contact Sheet");
-			mnuFileExportContactSheet.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, KeyEvent.ALT_DOWN_MASK | Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-			mnuFileExportContactSheet.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent e)
-				{
-					exportContactSheetClicked();
-				}
-			});
-		}
-		return mnuFileExportContactSheet;
-	}
-	
-	public JMenuItem getMnuFileClose()
-	{
-		if (mnuFileClose == null)
-		{
-			mnuFileClose = new JMenuItem("Close window");
-			mnuFileClose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-			mnuFileClose.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent e)
-				{
-					closeClicked();
-				}
-			});
-		}
-		return mnuFileClose;
-	}
-	
-	public JMenuItem getMnuFileQuit()
-	{
-		if (mnuFileQuit == null)
-		{
-			mnuFileQuit = new JMenuItem("Quit");
-			mnuFileQuit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-			mnuFileQuit.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent e)
-				{
-					quitClicked();
-				}
-			});
-		}
-		return mnuFileQuit;
-	}
-	
-	
-	
+
 	public JMenu getMnuEdit()
 	{
 		if (mnuEdit == null)
 		{
 			mnuEdit = new JMenu("Edit");
-			mnuEdit.add(getMnuEditClearAll());
+			mnuEdit.add(mnuEditClearAll);
 			mnuEdit.add(getMnuEdit565());
 			mnuEdit.add(getMnuEditTransparencyEmulation());
 		}
@@ -443,13 +260,7 @@ extends JFrame
 		{
 			mnuEdit565 = new JCheckBoxMenuItem("565 Mode?");
 			mnuEdit565.setSelected(true);
-			mnuEdit565.addItemListener(new ItemListener()
-			{
-				public void itemStateChanged(ItemEvent e)
-				{
-					clearStatusText();
-				}
-			});
+			mnuEdit565.addItemListener(e -> clearStatusText());
 		}
 		return mnuEdit565;
 	}
@@ -460,61 +271,22 @@ extends JFrame
 		{
 			mnuEditTransparencyEmulation = new JCheckBoxMenuItem("Transparency emulation (pure black)?");
 			mnuEditTransparencyEmulation.setSelected(false);
-			mnuEditTransparencyEmulation.addItemListener(new ItemListener()
-			{
-				public void itemStateChanged(ItemEvent e)
-				{
-					clearStatusText();
-				}
-			});
+			mnuEditTransparencyEmulation.addItemListener(e -> clearStatusText());
 		}
 		return mnuEditTransparencyEmulation;
 	}
-	
-	public JMenuItem getMnuEditClearAll()
-	{
-		if (mnuEditClearAll == null)
-		{
-			mnuEditClearAll = new JMenuItem("Clear All");
-			mnuEditClearAll.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent e)
-				{
-					clearAllClicked();
-				}
-			});
-		}
-		return mnuEditClearAll;
-	}
-	
-	
+
 	
 	public JMenu getMnuHelp()
 	{
 		if (mnuHelp == null)
 		{
 			mnuHelp = new JMenu("Help");
-			mnuHelp.add(getMnuHelpAbout());
+			mnuHelp.add(mnuHelpAbout);
 		}
 		return mnuHelp;
 	}
-	
-	public JMenuItem getMnuHelpAbout()
-	{
-		if (mnuHelpAbout == null)
-		{
-			mnuHelpAbout = new JMenuItem("About");
-			mnuHelpAbout.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-			mnuHelpAbout.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent e)
-				{
-					aboutClicked();
-				}
-			});
-		}
-		return mnuHelpAbout;
-	}
+
 	//Menus>
 	
 	
@@ -620,12 +392,12 @@ extends JFrame
 	
 	
 	
-	public synchronized void newClicked()
+	public synchronized void newClicked(ActionEvent e)
 	{
 		getApplicationCoordinator().newWindow();
 	}
 	
-	public synchronized void saveClicked()
+	public synchronized void saveClicked(ActionEvent e)
 	{
 		if (getSpriteFileChooser().showSaveDialog(null) == JFileChooser.APPROVE_OPTION)
 		{
@@ -648,13 +420,13 @@ extends JFrame
 		}
 	}
 	
-	public synchronized void openClicked()
+	public synchronized void openClicked(ActionEvent e)
 	{
 		//Todo Try to fix the vanishing menu bug   (edit: 2012-10-06; is this still a bug?)
 		this.repaint();
 		this.getMnu().repaint();
 		this.getMnuFile().repaint();
-		this.getMnuFileOpen().repaint();
+		this.mnuFileOpen.repaint();
 		
 		
 		if (getSpriteFileChooser().showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
@@ -666,21 +438,17 @@ extends JFrame
 		this.repaint();
 		this.getMnu().repaint();
 		this.getMnuFile().repaint();
-		this.getMnuFileOpen().repaint();
+		this.mnuFileOpen.repaint();
 		
 		SwingUtilities.invokeLater
 		(
-			new Runnable()
-			{
-				public void run()
-				{
-					repaint();
-					getMnu().repaint();
-					getMnuFile().repaint();
-					getMnuFileOpen().repaint();
-				}
+			() -> {
+				repaint();
+				getMnu().repaint();
+				getMnuFile().repaint();
+				mnuFileOpen.repaint();
 			}
-			);
+		);
 	}
 	
 	/**
@@ -702,7 +470,7 @@ extends JFrame
 		}
 	}
 	
-	public synchronized void importImageClicked()
+	public synchronized void importImageClicked(ActionEvent e)
 	{
 		if (getImageFileChooser().showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
 		{
@@ -712,7 +480,7 @@ extends JFrame
 	
 	public synchronized void importImageSafe(File... f)
 	{
-		int index = 0;
+		int index;
 		if (isAddAtSelection())
 			index = getSedpane().getSelectedImageIndex();
 		else
@@ -735,7 +503,7 @@ extends JFrame
 	}
 	
 	
-	public synchronized void exportImageClicked()
+	public synchronized void exportImageClicked(ActionEvent e)
 	{
 		BufferedImage selectedImage = getSelectedImage();
 		
@@ -757,13 +525,13 @@ extends JFrame
 	
 	
 	
-	public synchronized void importSetClicked()
+	public synchronized void importSetClicked(ActionEvent e)
 	{
 		if (getSingletonImageFileChooser().showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
 		{
 			try
 			{
-				int index = 0;
+				int index;
 				if (isAddAtSelection())
 					index = getSedpane().getSelectedImageIndex();
 				else
@@ -779,7 +547,7 @@ extends JFrame
 	}
 	
 	
-	public synchronized void exportSetClicked()
+	public synchronized void exportSetClicked(ActionEvent e)
 	{
 		if (getSedpane().getImageCount() == 0)
 		{
@@ -793,13 +561,13 @@ extends JFrame
 	
 	
 	
-	public synchronized void importContactSheetClicked()
+	public synchronized void importContactSheetClicked(ActionEvent e)
 	{
 		if (getSingletonImageFileChooser().showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
 		{
 			try
 			{
-				int index = 0;
+				int index;
 				if (isAddAtSelection())
 					index = getSedpane().getSelectedImageIndex();
 				else
@@ -809,44 +577,32 @@ extends JFrame
 				File file = getSingletonImageFileChooser().getSelectedFile();
 				
 				//Prompt for tile dimentions
-				String raw = null;
-				int tilewidth = 0, tileheight = 0;
-				boolean validTileDimensions = false;
+				String raw = JOptionPane.showInputDialog(null, new String[]{"And what are the tile sizes?", "Example: 100x100"}, "Enter tile size", JOptionPane.QUESTION_MESSAGE);
+				if (raw == null)
+					return;
+
+
+
+				char[] rawdata = raw.toCharArray();
+
+				IndependentCursor cursor = new IndependentCursor();
+
+				while (cursor.getCursor() < rawdata.length && !isDigit(rawdata[cursor.getCursor()], 10))
 				{
-					raw = JOptionPane.showInputDialog(null, new String[]{"And what are the tile sizes?", "Example: 100x100"}, "Enter tile size", JOptionPane.QUESTION_MESSAGE);
-					if (raw == null)
-						return;
-					
-					
-					
-					char[] rawdata = raw.toCharArray();
-					
-					IndependentCursor cursor = new IndependentCursor();
-					
-					while (cursor.getCursor() < rawdata.length && !isDigit(rawdata[cursor.getCursor()], 10))
-					{
-						cursor.setCursor(cursor.getCursor()+1); //Skip to the first number
-					}
-					
-					tilewidth = (int)parseBasicNumber(rawdata, 0, rawdata.length, cursor, 10);
-					
-					while (cursor.getCursor() < rawdata.length && !isDigit(rawdata[cursor.getCursor()], 10))
-					{
-						cursor.setCursor(cursor.getCursor()+1); //Skip the 'x' or whatever delimiter is used
-					}
-					
-					tileheight = (int)StringUtilities.parseBasicNumber(rawdata, 0, rawdata.length, cursor, 10);
-					
-					if (tilewidth == 0 || tileheight == 0)
-					{
-						validTileDimensions = false;
-					}
-					else
-					{
-						validTileDimensions = true;
-					}
+					cursor.setCursor(cursor.getCursor()+1); //Skip to the first number
 				}
-				
+
+				int tilewidth = (int)parseBasicNumber(rawdata, 0, rawdata.length, cursor, 10);
+
+				while (cursor.getCursor() < rawdata.length && !isDigit(rawdata[cursor.getCursor()], 10))
+				{
+					cursor.setCursor(cursor.getCursor()+1); //Skip the 'x' or whatever delimiter is used
+				}
+
+				int tileheight = (int)StringUtilities.parseBasicNumber(rawdata, 0, rawdata.length, cursor, 10);
+
+				boolean validTileDimensions = !(tilewidth == 0 || tileheight == 0);
+
 				
 				if (!validTileDimensions)
 				{
@@ -866,7 +622,7 @@ extends JFrame
 	}
 	
 	
-	public synchronized void exportContactSheetClicked()
+	public synchronized void exportContactSheetClicked(ActionEvent e)
 	{
 		if (getSedpane().getImageCount() == 0)
 		{
@@ -875,32 +631,30 @@ extends JFrame
 		else
 		{
 			//Validate that all images are the same size.
-			boolean allSameSize = false;
+			boolean allSameSize = true;
+
+			int width = 0, height = 0;
+			boolean dimensionsSet = false;
+			for (int i = 0; i < getSedpane().getImageCount(); i++)
 			{
-				allSameSize = true;
-				int width = 0, height = 0;
-				boolean dimensionsSet = false;
-				for (int i = 0; i < getSedpane().getImageCount(); i++)
+				BufferedImage image = getSedpane().getImageStorage().load(i);
+
+				if (!dimensionsSet)
 				{
-					BufferedImage image = getSedpane().getImageStorage().load(i);
-					
-					if (!dimensionsSet)
+					width = image.getWidth();
+					height = image.getHeight();
+					dimensionsSet = true;
+				}
+				else
+				{
+					if (width != image.getWidth() || height != image.getHeight())
 					{
-						width = image.getWidth();
-						height = image.getHeight();
-						dimensionsSet = true;
-					}
-					else
-					{
-						if (width != image.getWidth() || height != image.getHeight())
-						{
-							allSameSize = false;
-							break;
-						}
+						allSameSize = false;
+						break;
 					}
 				}
 			}
-			
+
 			
 			if (!allSameSize)
 			{
@@ -948,31 +702,28 @@ extends JFrame
 		}
 	}
 	
+
 	
 	
-	
-	
-	
-	
-	public synchronized void clearAllClicked()
+	public synchronized void clearAllClicked(ActionEvent e)
 	{
 		getSedpane().clear();
 	}
 	
 	
-	public synchronized void aboutClicked()
+	public synchronized void aboutClicked(ActionEvent e)
 	{
 		getApplicationCoordinator().aboutClicked();
 	}
 	
 	
 	
-	public synchronized void closeClicked()
+	public synchronized void closeClicked(ActionEvent e)
 	{
 		getApplicationCoordinator().closeWindow(this);
 	}
 	
-	public synchronized void quitClicked()
+	public synchronized void quitClicked(ActionEvent e)
 	{
 		getApplicationCoordinator().safeQuit();
 	}
@@ -980,15 +731,7 @@ extends JFrame
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	
 	
 	//<GUI Controllers
@@ -1010,12 +753,8 @@ extends JFrame
 			return null;
 	}
 	
-	public synchronized boolean isAddAtSelection()
-	{
-		if (getSedpane().getSelectedImageIndex() != -1)
-			return this.addAtSelection;
-		else
-			return false;
+	public synchronized boolean isAddAtSelection() {
+		return getSedpane().getSelectedImageIndex() != -1 && this.addAtSelection;
 	}
 	
 	public synchronized void setAddAtSelection(boolean addAtSelection)
@@ -1100,53 +839,14 @@ extends JFrame
 		{
 			statusClearer.unregisterAll();
 			
-			statusClearer.register
-			(
-				new Runnable()
-				{
-					public void run()
-					{
-						clearStatusText();
-					}
-				},
-				System.currentTimeMillis()+getStatusClearDelay()
-				);
+			statusClearer.register(this::clearStatusText, System.currentTimeMillis()+getStatusClearDelay());
 		}
 	}
 	//GUI Controllers>
 	//GUI>
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	
 	
 	
@@ -1341,7 +1041,7 @@ extends JFrame
 	
 	
 	
-	public void open(File f) throws FileNotFoundException, IOException
+	public void open(File f) throws IOException
 	{
 		int dot = f.getName().lastIndexOf(".");
 		String ext = ".c16";
@@ -1532,24 +1232,20 @@ extends JFrame
 	{
 		//Todo make this not based on the file suffix, but user-controllable  (suffix is better than contents, so ambiguous files can be manually differentiated, but user control in the GUI is even better)
 		ImageWriterSpi format = null;
+		String lowercaseName = file.getName().toLowerCase();
+		Iterator<ImageWriterSpi> spis = IIORegistry.getDefaultInstance().getServiceProviders(ImageWriterSpi.class, true);
+		while (spis.hasNext())
 		{
-			String lowercaseName = file.getName().toLowerCase();
-			Iterator<ImageWriterSpi> spis = IIORegistry.getDefaultInstance().getServiceProviders(ImageWriterSpi.class, true);
-			WriterLoop: while (spis.hasNext())
-			{
-				ImageWriterSpi spi = spis.next();
-				
-				SuffixLoop: for (String suffix : spi.getFileSuffixes())
-				{
-					if (lowercaseName.endsWith(suffix.toLowerCase()))
-					{
-						format = spi;
-						break WriterLoop;
-					}
+			ImageWriterSpi spi = spis.next();
+
+			for (String suffix : spi.getFileSuffixes()) {
+				if (lowercaseName.endsWith(suffix.toLowerCase())) {
+					format = spi;
+					break;
 				}
 			}
 		}
-		
+
 		if (format == null)
 		{
 			popupError("I don't know how to make that type of file.");
@@ -1588,46 +1284,40 @@ extends JFrame
 		
 		
 		//Learn the pattern based on this one file.
-		final String setPrefix;
-		final String setSuffix;
+		String name = representative.getName();
+		int lastDotPos = name.lastIndexOf('.');
+
+		int start;
+		if (lastDotPos == -1)
+			start = name.length();
+		else
+			start = lastDotPos;
+
+		int index = start;
+
+		while (true)
 		{
-			String name = representative.getName();
-			int lastDotPos = name.lastIndexOf('.');
-			
-			int start = 0;
-			
-			if (lastDotPos == -1)
-				start = name.length();
-			else
-				start = lastDotPos;
-			
-			int index = start;
-			
-			while (true)
+			index--;
+
+			if (index < 0)
 			{
-				index--;
-				
-				if (index < 0)
-				{
-					break;
-				}
-				
-				char c = name.charAt(index);
-				
-				if (Character.digit(c, 10) == -1)
-				{
-					break;
-				}
+				break;
 			}
-			
-			
-			setPrefix = name.substring(0, index+1);
-			setSuffix = name.substring(start);
+
+			char c = name.charAt(index);
+
+			if (Character.digit(c, 10) == -1)
+			{
+				break;
+			}
 		}
+
+
+		final String setPrefix = name.substring(0, index+1);
+		final String setSuffix = name.substring(start);
+
 		
-		
-		
-		
+
 		//Find the files in the set
 		final File[] setMembers;
 		{
@@ -1638,39 +1328,33 @@ extends JFrame
 			
 			setMembers = dir.listFiles
 				(
-					new java.io.FileFilter()
-					{
-						public boolean accept(File file)
-						{
+						file -> {
 							if (!file.isFile())
 								return false;
-							
+
 							String lowerName = file.getName().toLowerCase();
-							
+
 							return lowerName.startsWith(lowerPrefix) && lowerName.endsWith(lowerSuffix);
 						}
-					}
-					);
+				);
 			
 			
 			//Sort set members by their index (which is not a simple as it sounds since 2 comes before 13 in natural string order)
+			assert setMembers != null;
 			Arrays.sort
 			(
 				setMembers,
-				new Comparator<File>()
-				{
-					public int compare(File a, File b)
-					{
+					(a, b) -> {
 						String aname = a.getName();
 						String bname = b.getName();
 						int prefixLength = setPrefix.length();
 						int suffixLength = setSuffix.length();
 						String aIndexPart = aname.substring(prefixLength, aname.length()-suffixLength);
 						String bIndexPart = bname.substring(prefixLength, bname.length()-suffixLength);
-						
+
 						int aIndex = StringUtilities.parseIntegerLeniently(aIndexPart, 10, 0);
 						int bIndex = StringUtilities.parseIntegerLeniently(bIndexPart, 10, 0);
-						
+
 						if (aIndex > bIndex)
 							return 1;
 						else if (aIndex < bIndex)
@@ -1678,8 +1362,7 @@ extends JFrame
 						else
 							return 0;
 					}
-				}
-				);
+			);
 		}
 		
 		
@@ -1710,73 +1393,44 @@ extends JFrame
 		
 		
 		//<Naming
-		File[] setFiles = null;
+		File[] setFiles = new File[getSedpane().getImageCount()];
+
+		int baseDotPos = base.lastIndexOf('.');
+		String basePrefix, baseSuffix;
+		if (baseDotPos == -1)
 		{
-			setFiles = new File[getSedpane().getImageCount()];
-			
-			int baseDotPos = base.lastIndexOf('.');
-			String basePrefix = null, baseSuffix = null;
-			if (baseDotPos == -1)
-			{
-				basePrefix = base;
-				baseSuffix = "";
-			}
-			else
-			{
-				basePrefix = base.substring(0, baseDotPos);
-				baseSuffix = base.substring(baseDotPos);
-			}
-			
-			boolean endsWithSupportedSuffix = false;
-			{
-				String baseSuffixLowerCase = baseSuffix.toLowerCase();
-				for (String ext : format.getFileSuffixes())
-				{
-					if (baseSuffixLowerCase.endsWith(ext.toLowerCase()))
-					{
-						endsWithSupportedSuffix = true;
-						break;
-					}
-				}
-			}
-			
-			if (!endsWithSupportedSuffix && format.getFileSuffixes().length > 0)
-				baseSuffix += "."+format.getFileSuffixes()[0];
-			
-			for (int i = 0; i < setFiles.length; i++)
-			{
-				setFiles[i] = new File(dir, basePrefix + (i+firstSetIndex) + baseSuffix);
-			}
+			basePrefix = base;
+			baseSuffix = "";
+		}
+		else
+		{
+			basePrefix = base.substring(0, baseDotPos);
+			baseSuffix = base.substring(baseDotPos);
+		}
+
+		final String baseSuffixLowerCase = baseSuffix.toLowerCase();
+		boolean endsWithSupportedSuffix = Arrays.stream(format.getFileSuffixes()).anyMatch(ext -> baseSuffixLowerCase.endsWith(ext.toLowerCase()));
+
+		if (!endsWithSupportedSuffix && format.getFileSuffixes().length > 0)
+			baseSuffix += "."+format.getFileSuffixes()[0];
+
+		for (int i = 0; i < setFiles.length; i++)
+		{
+			setFiles[i] = new File(dir, basePrefix + (i+firstSetIndex) + baseSuffix);
 		}
 		//Naming>
 		
 		
 		//<Verify
-		boolean atleastOneExists = false;
-		{
-			for (File file : setFiles)
-			{
-				if (file.exists())
-				{
-					atleastOneExists = true;
-					break;
-				}
-			}
-		}
-		
-		
-		if (atleastOneExists)
-		{
-			boolean answer = ask("Some of these files exist, are you sure you want to overwrite?");
-			
-			if (!answer)
-				return;
-		}
+		boolean atleastOneExists = Arrays.stream(setFiles).anyMatch(File::exists);
+
+		if (atleastOneExists && !ask("Some of these files exist, are you sure you want to overwrite?"))
+			return;
 		//Verify>
 		
 		
 		//<IO
-		ImageWriter writer = format.createWriterInstance();
+		final ImageWriter writer = format.createWriterInstance();
 		
 		for (int i = 0; i < setFiles.length; i++)
 		{
@@ -1813,41 +1467,34 @@ extends JFrame
 			return;
 		}
 		
-		
-		BufferedImage sheet = null;
+
+		setStatusText("Loading sheet file "+sheetFile.getName());
+
+		BufferedImage sheet = ImageIO.read(sheetFile);
+
+		if (sheet.getWidth() == 0 || sheet.getHeight() == 0)
 		{
-			setStatusText("Loading sheet file "+sheetFile.getName());
-			
-			sheet = ImageIO.read(sheetFile);
-			
-			if (sheet.getWidth() == 0 || sheet.getHeight() == 0)
-			{
-				popupError(sheetFile.getName()+" is an invalid image file.");
-				return;
-			}
+			popupError(sheetFile.getName()+" is an invalid image file.");
+			return;
 		}
-		
-		
-		int cols = 0;
-		int rows = 0;
+
+
+		if (sheet.getWidth() % tilewidth != 0 || sheet.getHeight() % tileheight != 0)
 		{
-			if (sheet.getWidth() % tilewidth != 0 || sheet.getHeight() % tileheight != 0)
-			{
-				popupError(tilewidth+"x"+tileheight+" tiles would not fit evenly into a "+sheet.getWidth()+"x"+sheet.getHeight()+" sheet.");
-				return;
-			}
-			
-			if (tilewidth > sheet.getWidth() || tileheight > sheet.getHeight())
-			{
-				popupError("Tiles cannot be larger than the sheet!");
-				return;
-			}
-			
-			cols = sheet.getWidth() / tilewidth;
-			rows = sheet.getHeight() / tileheight;
+			popupError(tilewidth+"x"+tileheight+" tiles would not fit evenly into a "+sheet.getWidth()+"x"+sheet.getHeight()+" sheet.");
+			return;
 		}
-		
-		
+
+		if (tilewidth > sheet.getWidth() || tileheight > sheet.getHeight())
+		{
+			popupError("Tiles cannot be larger than the sheet!");
+			return;
+		}
+
+		int cols = sheet.getWidth() / tilewidth;
+		int rows = sheet.getHeight() / tileheight;
+
+
 		
 		//Actually import them
 		{
@@ -1916,58 +1563,51 @@ extends JFrame
 			return;
 		}
 		
-		
-		int tilewidth = 0;
-		int tileheight = 0;
+
+		BufferedImage representative = getSedpane().getImageStorage().load(0);
+		int tilewidth = representative.getWidth();
+		int tileheight = representative.getHeight();
+
+		for (int i = 1; i < getSedpane().getImageCount(); i++)
 		{
-			BufferedImage representative = getSedpane().getImageStorage().load(0);
-			tilewidth = representative.getWidth();
-			tileheight = representative.getHeight();
-			
-			for (int i = 1; i < getSedpane().getImageCount(); i++)
+			BufferedImage image = getSedpane().getImageStorage().load(i);
+
+			if (image.getWidth() != tilewidth || image.getHeight() != tileheight)
 			{
-				BufferedImage image = getSedpane().getImageStorage().load(i);
-				
-				if (image.getWidth() != tilewidth || image.getHeight() != tileheight)
-				{
-					setErrorText("Not all images are the same size.");
-					return;
-				}
+				setErrorText("Not all images are the same size.");
+				return;
 			}
 		}
-		
+
 		
 		setStatusText("Generating "+cols+"x"+rows+" contact sheet...");
 		
 		//Make the contact sheet
-		BufferedImage sheet = null;
+		BufferedImage sheet = new BufferedImage(tilewidth*cols, tileheight*rows, BufferedImage.TYPE_INT_ARGB);
+		ColorConvertOp converter = new ColorConvertOp(null);
+
+		for (int i = 0; i < getSedpane().getImageCount(); i++)
 		{
-			sheet = new BufferedImage(tilewidth*cols, tileheight*rows, BufferedImage.TYPE_INT_ARGB);
-			ColorConvertOp converter = new ColorConvertOp(null);
-			
-			for (int i = 0; i < getSedpane().getImageCount(); i++)
+			int col = i % cols;
+			int row = i / cols;
+
+			BufferedImage tile = getSedpane().getImageStorage().load(i);
+			BufferedImage compatibleTile = null;
 			{
-				int col = i % cols;
-				int row = i / cols;
-				
-				BufferedImage tile = getSedpane().getImageStorage().load(i);
-				BufferedImage compatibleTile = null;
+				if (tile.getColorModel().equals(sheet.getColorModel()) && tile.getSampleModel().equals(sheet.getSampleModel()))
 				{
-					if (tile.getColorModel().equals(sheet.getColorModel()) && tile.getSampleModel().equals(sheet.getSampleModel()))
-					{
-						compatibleTile = tile;
-					}
-					else
-					{
-						compatibleTile = new BufferedImage(tile.getWidth(), tile.getHeight(), BufferedImage.TYPE_INT_ARGB);
-						converter.filter(tile, compatibleTile);
-					}
+					compatibleTile = tile;
 				}
-				
-				sheet.getRaster().setDataElements(col*tilewidth, row*tileheight, compatibleTile.getRaster());
+				else
+				{
+					compatibleTile = new BufferedImage(tile.getWidth(), tile.getHeight(), BufferedImage.TYPE_INT_ARGB);
+					converter.filter(tile, compatibleTile);
+				}
 			}
+
+			sheet.getRaster().setDataElements(col*tilewidth, row*tileheight, compatibleTile.getRaster());
 		}
-		
+
 		
 		setStatusText("Exporting "+file.getName());
 		

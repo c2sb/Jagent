@@ -104,7 +104,7 @@ public class MonkApplicationCoordinator
 	
 	
 	protected MonkWindow adrian;
-	protected AboutDialog aboutDialog;
+	protected final AboutDialog aboutDialog = new AboutDialog(ABOUT_RESOURCE);
 	
 	
 	public void initWindow()
@@ -113,18 +113,7 @@ public class MonkApplicationCoordinator
 		adrian.setApplicationCoordinator(this);
 		adrian.setVisible(true);
 	}
-	
-	
-	public AboutDialog getAboutDialog()
-	{
-		if (aboutDialog == null)
-		{
-			aboutDialog = new AboutDialog(ABOUT_RESOURCE);
-		}
-		return aboutDialog;
-	}
-	
-	
+
 	
 	public void setupMacExtensions()
 	{
@@ -196,7 +185,7 @@ public class MonkApplicationCoordinator
 	
 	public void aboutClicked()
 	{
-		getAboutDialog().display();
+		aboutDialog.display();
 	}
 	
 	public void quitClicked()

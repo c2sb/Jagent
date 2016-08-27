@@ -39,6 +39,7 @@ import javax.swing.JRadioButton;
 import javax.swing.KeyStroke;
 import rebound.jagent.ResourceHog;
 import rebound.jagent.ui.gui.DropData;
+import rebound.jagent.ui.gui.common.GUI;
 import rebound.jagent.ui.gui.monk.Monkifier.OutputType;
 
 public class MonkWindow
@@ -71,7 +72,7 @@ implements DropTargetListener, Notifee, ItemListener
 	protected JMenu mnuEdit;
 	protected JCheckBoxMenuItem mnuEditMergeScripts;
 	protected JMenu mnuHelp;
-	protected JMenuItem mnuHelpAbout;
+	protected final JMenuItem mnuHelpAbout = GUI.createMenuItem("About", KeyEvent.VK_F1, e -> getApplicationCoordinator().aboutClicked());
 	
 	public MonkWindow()
 	{
@@ -184,15 +185,19 @@ implements DropTargetListener, Notifee, ItemListener
 			
 			currAction.addMouseListener(new MouseListener()
 			{
+				@Override
 				public void mouseClicked(MouseEvent e)
 				{
 					currAction.setText("Awaiting files");
 				}
-				
-				
+
+				@Override
 				public void mouseExited(MouseEvent e) {}
+				@Override
 				public void mouseEntered(MouseEvent e) {}
+				@Override
 				public void mouseReleased(MouseEvent e) {}
+				@Override
 				public void mousePressed(MouseEvent e) {}
 			});
 		}
@@ -255,16 +260,7 @@ implements DropTargetListener, Notifee, ItemListener
 		{
 			mnuFileQuit = new JMenuItem("Quit");
 			mnuFileQuit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-			mnuFileQuit.addActionListener
-			(
-				new ActionListener()
-				{
-					public void actionPerformed(ActionEvent e)
-					{
-						getApplicationCoordinator().quitClicked();
-					}
-				}
-				);
+			mnuFileQuit.addActionListener(e -> getApplicationCoordinator().quitClicked());
 		}
 		return this.mnuFileQuit;
 	}
@@ -286,14 +282,9 @@ implements DropTargetListener, Notifee, ItemListener
 			mnuEditMergeScripts = new JCheckBoxMenuItem("Merge scripts", true);
 			mnuEditMergeScripts.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 			mnuEditMergeScripts.addItemListener(this);
-			mnuEditMergeScripts.addActionListener(new ActionListener()
-			{
-				@Override
-				public void actionPerformed(ActionEvent e)
-				{
-					itemStateChanged(null); //refresh the setting on the model (monkifier)
-				}
-			});
+			mnuEditMergeScripts.addActionListener(e -> {
+                itemStateChanged(null); //refresh the setting on the model (monkifier)
+            });
 		}
 		return this.mnuEditMergeScripts;
 	}
@@ -303,35 +294,11 @@ implements DropTargetListener, Notifee, ItemListener
 		if (mnuHelp == null)
 		{
 			mnuHelp = new JMenu("Help");
-			if (UseAboutMenuItem) mnuHelp.add(getMnuHelpAbout());
+			if (UseAboutMenuItem) mnuHelp.add(mnuHelpAbout);
 		}
 		return this.mnuHelp;
 	}
-	
-	public JMenuItem getMnuHelpAbout()
-	{
-		if (mnuHelpAbout == null)
-		{
-			mnuHelpAbout = new JMenuItem("About");
-			mnuHelpAbout.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-			mnuHelpAbout.addActionListener
-			(
-				new ActionListener()
-				{
-					public void actionPerformed(ActionEvent e)
-					{
-						getApplicationCoordinator().aboutClicked();
-					}
-				}
-				);
-		}
-		return this.mnuHelpAbout;
-	}
-	
-	
-	
-	
-	
+
 	
 	
 	
@@ -409,38 +376,17 @@ implements DropTargetListener, Notifee, ItemListener
 	
 	public void process(final Collection<File> files)
 	{
-		new Thread()
-		{
-			@Override
-			public void run()
-			{
-				chimp.monkify(files);
-			}
-		}.start();
+		new Thread(() -> chimp.monkify(files)).start();
 	}
 	
 	public void process(final File... files)
 	{
-		new Thread()
-		{
-			@Override
-			public void run()
-			{
-				chimp.monkify(files);
-			}
-		}.start();
+		new Thread(() -> chimp.monkify(files)).start();
 	}
 	
 	public void process(final File file)
 	{
-		new Thread()
-		{
-			@Override
-			public void run()
-			{
-				chimp.monkify(file);
-			}
-		}.start();
+		new Thread(() -> chimp.monkify(file)).start();
 	}
 	
 	

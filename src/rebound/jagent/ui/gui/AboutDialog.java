@@ -165,43 +165,36 @@ extends JFrame
 			//Hyperlinks
 			{
 				final JEditorPane _mp = mediaPane; //We're not going to change it
-				mediaPane.addHyperlinkListener(new HyperlinkListener()
-				{
-					public void hyperlinkUpdate(HyperlinkEvent e)
-					{
-						if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED)
-						{
-							if ("mailto".equalsIgnoreCase(e.getURL().getProtocol()))
-							{
-								if (Desktop.isDesktopSupported())
-								{
-									try
-									{
-										Desktop.getDesktop().mail(e.getURL().toURI());
-									}
-									catch (IOException exc)
-									{
-									}
-									catch (URISyntaxException exc)
-									{
-									}
-								}
-							}
-							else
-							{
-								//Load the page in the about browser
-								try
-								{
-									_mp.setPage(e.getURL());
-								}
-								catch (IOException exc)
-								{
-									setPageToIOError(exc);
-								}
-							}
-						}
-					}
-				});
+				mediaPane.addHyperlinkListener(e -> {
+                    if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED)
+                    {
+                        if ("mailto".equalsIgnoreCase(e.getURL().getProtocol()))
+                        {
+                            if (Desktop.isDesktopSupported())
+                            {
+                                try
+                                {
+                                    Desktop.getDesktop().mail(e.getURL().toURI());
+                                }
+                                catch (IOException | URISyntaxException ignored)
+                                {
+                                }
+                            }
+                        }
+                        else
+                        {
+                            //Load the page in the about browser
+                            try
+                            {
+                                _mp.setPage(e.getURL());
+                            }
+                            catch (IOException exc)
+                            {
+                                setPageToIOError(exc);
+                            }
+                        }
+                    }
+                });
 			}
 			
 			
@@ -274,13 +267,7 @@ extends JFrame
 		{
 			closeButton = new JButton();
 			closeButton.setText("Close");
-			closeButton.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent e)
-				{
-					closeButtonClicked();
-				}
-			});
+			closeButton.addActionListener(e -> closeButtonClicked());
 		}
 		return closeButton;
 	}

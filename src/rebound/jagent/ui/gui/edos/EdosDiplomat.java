@@ -9,6 +9,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -53,14 +54,12 @@ implements DnDiplomat
 	{
 		if (flav == DataFlavor.javaFileListFlavor || flav == DropData.URILIST_FLAVOR)
 		{
-			List<File> l = null;
-			{
-				if (flav == DropData.URILIST_FLAVOR)
-					l = DropData.parseURIList((String)data);
-				else
-					l = (List)data;
-			}
-			
+			List<File> l;
+			if (flav == DropData.URILIST_FLAVOR)
+				l = DropData.parseURIList((String)data);
+			else
+				l = (List<File>)data;
+
 			try
 			{
 				for (File f : l)
@@ -112,7 +111,7 @@ implements DnDiplomat
 			return img;
 		else if (DataFlavor.javaFileListFlavor.equals(flav) || DropData.URILIST_FLAVOR.equals(flav))
 		{
-			File created = null;
+			File created;
 			
 			try
 			{
@@ -150,7 +149,7 @@ implements DnDiplomat
 	//This is used instead of File.createTempFile() because I need control over the file name.
 	protected File createTempDragFile(BufferedImage img, int index) throws IOException
 	{
-		File f = null;
+		File f;
 		String name = "Frame_"+index+getDragExt();
 		
 		for (String path : TEMP_DRAGIMAGE_STORAGE_PATHS)
@@ -262,15 +261,12 @@ implements DnDiplomat
 		ImageWriter writer = null;
 		{
 			Iterator<ImageWriterSpi> spis = IIORegistry.getDefaultInstance().getServiceProviders(ImageWriterSpi.class, true);
-			SpiLoop: while (spis.hasNext())
-			{
+			while (spis.hasNext()) {
 				ImageWriterSpi spi = spis.next();
-				MimeLoop: for (String mimeType : spi.getMIMETypes())
-				{
-					if (mimeType.startsWith(getDragMIME()))
-					{
+				for (String mimeType : spi.getMIMETypes()) {
+					if (mimeType.startsWith(getDragMIME())) {
 						writer = spi.createWriterInstance();
-						break SpiLoop;
+						break;
 					}
 				}
 			}
@@ -296,22 +292,17 @@ implements DnDiplomat
 	}
 	public void setOffPendingDelete(final File f)
 	{
-		new Thread()
-		{
-			//DnD is just ridiculous; cross platform?! HAH!
-			public void run()
-			{
-				try
-				{
-					Thread.sleep(300*1000);
-				}
-				catch (InterruptedException exc)
-				{
-				}
-				
-				f.delete(); //Tied to a path; the temp path, won't delete the file if it's moved out in time
-			}
-		}.start();
+		new Thread(() -> {
+            try
+            {
+                Thread.sleep(300*1000);
+            }
+            catch (InterruptedException ignored)
+            {
+            }
+
+            f.delete(); //Tied to a path; the temp path, won't delete the file if it's moved out in time
+        }).start();
 	}
 	
 	
