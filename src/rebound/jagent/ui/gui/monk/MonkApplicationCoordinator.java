@@ -22,6 +22,7 @@ import javax.swing.JOptionPane;
 import rebound.exceptions.ImpossibleException;
 import rebound.jagent.lib.caos2pray.FriendlyTags;
 import rebound.jagent.ui.gui.AboutDialog;
+import rebound.jagent.ui.gui.common.GUI;
 import rebound.osint.modapple.eawtproxy.ApplicationEventProxy;
 import rebound.osint.modapple.eawtproxy.ApplicationListenerClone;
 import rebound.osint.modapple.eawtproxy.ApplicationProxy;
@@ -39,6 +40,7 @@ public class MonkApplicationCoordinator
 	
 	public static void main(String[] args)
 	{
+		GUI.setupLookAndFeel();
 		try
 		{
 			FriendlyTags.loadConfig();

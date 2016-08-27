@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
 import rebound.jagent.ui.gui.AboutDialog;
+import rebound.jagent.ui.gui.common.GUI;
 import rebound.osint.modapple.eawtproxy.ApplicationEventProxy;
 import rebound.osint.modapple.eawtproxy.ApplicationListenerClone;
 import rebound.osint.modapple.eawtproxy.ApplicationProxy;
@@ -39,6 +40,7 @@ implements WindowListener
 	
 	public static void main(String[] args)
 	{
+		GUI.setupLookAndFeel();
 		EdosApplicationCoordinator coordinator = new EdosApplicationCoordinator();
 		if (AppleJavaExtentionsPresent)
 			coordinator.setupMacExtensions();
